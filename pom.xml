@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- TODO: Use kiwi-parent and kiwi-bom -->
+
+    <groupId>com.acme</groupId>
+    <artifactId>mina-junit-extension</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>Apache MINA JUnit Extension</name>
+    <description>
+        A simple JUnit Jupiter extension for Apache MINA.
+    </description>
+
+    <properties>
+        <!-- dependency versions -->
+
+        <!-- plugin versions -->
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.java.release>17</maven-compiler-plugin.java.release>
+        <maven-compiler-plugin.encoding>UTF-8</maven-compiler-plugin.encoding>
+    </properties>
+
+    <dependencies>
+
+        <!-- TODO -->
+
+    </dependencies>
+
+    <build>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <release>${maven-compiler-plugin.java.release}</release>
+                    <encoding>${maven-compiler-plugin.encoding}</encoding>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+</project>
