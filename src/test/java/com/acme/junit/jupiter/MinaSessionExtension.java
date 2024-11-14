@@ -1,10 +1,11 @@
 package com.acme.junit.jupiter;
 
 import static com.google.common.base.Preconditions.checkState;
-
 import static java.util.Objects.nonNull;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.mina.core.future.CloseFuture;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.service.IoHandlerAdapter;
@@ -24,9 +25,6 @@ import org.kiwiproject.net.LocalPortChecker;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
-
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * JUnit Jupiter extension that allows integration testing using Apache MINA. It provides an {@link IoSession} for
