@@ -68,21 +68,4 @@
 
     </dependencies>
 
-    <build>
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
-                <configuration>
-                    <release>${maven-compiler-plugin.java.release}</release>
-                    <encoding>${maven-compiler-plugin.encoding}</encoding>
-                </configuration>
-            </plugin>
-
-        </plugins>
-
-    </build>
-
 </project>
