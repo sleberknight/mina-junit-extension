@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- TODO: Use kiwi-parent and kiwi-bom -->
+    <parent>
+        <groupId>org.kiwiproject</groupId>
+        <artifactId>kiwi-parent</artifactId>
+        <version>3.0.20</version>
+    </parent>
 
     <groupId>com.acme</groupId>
     <artifactId>mina-junit-extension</artifactId>
@@ -16,16 +21,50 @@
 
     <properties>
         <!-- dependency versions -->
-
-        <!-- plugin versions -->
-        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <maven-compiler-plugin.java.release>17</maven-compiler-plugin.java.release>
-        <maven-compiler-plugin.encoding>UTF-8</maven-compiler-plugin.encoding>
+        <kiwi-bom.version>2.0.18</kiwi-bom.version>
+        <kiwi.version>4.5.2</kiwi.version>
+        <mina.version>2.2.3</mina.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>org.kiwiproject</groupId>
+                <artifactId>kiwi-bom</artifactId>
+                <version>${kiwi-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.kiwiproject</groupId>
+                <artifactId>kiwi</artifactId>
+                <version>${kiwi.version}</version>
+            </dependency>
+
+            <!-- TODO: JUnit deps will need to be compile to be in src/main -->
+
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
 
-        <!-- TODO -->
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kiwiproject</groupId>
+            <artifactId>kiwi</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.mina</groupId>
+            <artifactId>mina-core</artifactId>
+            <version>${mina.version}</version>
+        </dependency>
 
     </dependencies>
 
