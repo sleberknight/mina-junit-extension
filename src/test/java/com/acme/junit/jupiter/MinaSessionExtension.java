@@ -33,29 +33,52 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Tests using this extension should:
  * <ol>
- *     <li>Obtain a port from this extension in a {@link BeforeEach} method</li>
+ *     <li>Get a port from this extension in a {@link BeforeEach} method</li>
  *     <li>Start a server on the provided port, again in a {@link BeforeEach} method</li>
  *     <li>Stop the server in an {@link AfterEach} method</li>
  * </ol>
  */
 @Slf4j
-public class MinaSessionExtension implements BeforeEachCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback {
+public class MinaSessionExtension implements
+        BeforeEachCallback,
+        BeforeTestExecutionCallback,
+        AfterTestExecutionCallback {
 
     private static final LocalPortChecker LOCAL_PORT_CHECKER = new LocalPortChecker();
+    private static final int DEFAULT_CONNECTION_TIMEOUT_SECONDS = 2;
 
     private NioSocketConnector senderConnector;
 
     /**
-     * Tests can obtain a session which can be used to send data to a test server.
+     * Tests can get a session which can be used to send data to a test server.
      */
     @Getter
     private IoSession session;
 
     /**
-     * Tests using this extension shoould use this port to start their servers on.
+     * Tests using this extension should use this port to start their servers on.
      */
     @Getter
     private int port;
+
+    private final int secondsToWaitForConnection;
+
+    /**
+     * Create an instance using the default server connection timeout (two seconds).
+     */
+    public MinaSessionExtension() {
+        this(DEFAULT_CONNECTION_TIMEOUT_SECONDS);
+    }
+
+    /**
+     * Create an instance using the given server connection timeout.
+     *
+     * @param secondsToWaitForConnection the number of seconds to wait for the server-under-test before test
+     *                                   execution to start
+     */
+    public MinaSessionExtension(int secondsToWaitForConnection) {
+        this.secondsToWaitForConnection = secondsToWaitForConnection;
+    }
 
     /**
      * Finds an open port. The test using this extension should use this port to start its server on.
@@ -63,12 +86,16 @@ public class MinaSessionExtension implements BeforeEachCallback, BeforeTestExecu
     @Override
     public void beforeEach(ExtensionContext context) {
         port = LOCAL_PORT_CHECKER.findFirstOpenPortAbove(16_384).orElseThrow();
+        LOG.trace("Found open port {}", port);
     }
 
     /**
      * The test using this extension should, in a @{@link BeforeEach} method, start its server.
      * Then, immediately before test execution, this method opens an {@link IoSession} to the
      * test server which can be used to send data, e.g., via {@link IoSession#write(Object)}.
+     * <p>
+     * Waits for the server-under-test to be connected, and throws {@link IllegalStateException}
+     * if the server is not connected within the timeout period.
      */
     @Override
     public void beforeTestExecution(ExtensionContext context) {
@@ -81,11 +108,14 @@ public class MinaSessionExtension implements BeforeEachCallback, BeforeTestExecu
         var ioHandler = new IoHandlerAdapter();
         senderConnector.setHandler(ioHandler);
 
+        LOG.trace("Connecting to port {} on localhost", port);
         var socketAddress = new InetSocketAddress("localhost", port);
         var connectFuture = senderConnector.connect(socketAddress);
-        var connectedBeforeTimeout = connectFuture.awaitUninterruptibly(2, TimeUnit.SECONDS);
-        checkState(connectedBeforeTimeout, "Did not connect before timeout");
-        checkState(connectFuture.isConnected(), "Is not connected to localhost:%s", port);
+        var connectedBeforeTimeout = connectFuture.awaitUninterruptibly(secondsToWaitForConnection, TimeUnit.SECONDS);
+        checkState(connectedBeforeTimeout,
+                "Did not connect before timeout (does your test start the server in a @BeforeEach method?)");
+        checkState(connectFuture.isConnected(),
+                "Is not connected to localhost:%s (does your test start the server in a @BeforeEach method?)", port);
 
         session = connectFuture.getSession();
     }
@@ -100,6 +130,7 @@ public class MinaSessionExtension implements BeforeEachCallback, BeforeTestExecu
         }
 
         if (nonNull(senderConnector)) {
+            LOG.trace("Disposing {}", senderConnector);
             senderConnector.dispose();
         }
     }
@@ -128,10 +159,11 @@ public class MinaSessionExtension implements BeforeEachCallback, BeforeTestExecu
      */
     @CanIgnoreReturnValue
     public boolean closeSessionWaitingUntilClosedOrTimeout() {
+        LOG.trace("Closing session {}", session.getId());
         var closeFuture = closeNow();
-        var closedBeforeTimeout = closeFuture.awaitUninterruptibly(2, TimeUnit.SECONDS);
+        var closedBeforeTimeout = closeFuture.awaitUninterruptibly(DEFAULT_CONNECTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         if (!closedBeforeTimeout) {
-            LOG.warn("session {} did not close before timeout", getSessionId());
+            LOG.warn("Session {} did not close before timeout", getSessionId());
         }
         return closedBeforeTimeout;
     }
