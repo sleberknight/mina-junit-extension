@@ -85,7 +85,7 @@ public class MinaSessionExtension implements
      */
     @Override
     public void beforeEach(ExtensionContext context) {
-        port = LOCAL_PORT_CHECKER.findFirstOpenPortAbove(16_384).orElseThrow();
+        port = LOCAL_PORT_CHECKER.findRandomOpenPortAbove(16_384).orElseThrow();
         LOG.trace("Found open port {}", port);
     }
 
