@@ -11,11 +11,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
-public class MinaTimeServer {
-
-    private static final int PORT = 9123;
-
-    public static void main(String[] args) throws IOException {
+public class TimeServer {
+    public void createAndStart(int port) throws IOException {
         IoAcceptor acceptor = new NioSocketAcceptor();
 
         acceptor.getFilterChain().addLast("logger", new LoggingFilter());
@@ -25,7 +22,7 @@ public class MinaTimeServer {
         acceptor.setHandler(new TimeServerHandler());
 
         acceptor.getSessionConfig().setReadBufferSize(2048);
-        acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
-        acceptor.bind(new InetSocketAddress(PORT));
+        acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);  // seconds
+        acceptor.bind(new InetSocketAddress(port));
     }
 }
