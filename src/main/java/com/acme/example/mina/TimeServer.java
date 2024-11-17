@@ -1,5 +1,6 @@
 package com.acme.example.mina;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Slf4j
 public class TimeServer {
 
     private final AtomicBoolean started;
@@ -41,16 +43,17 @@ public class TimeServer {
         acceptor.getSessionConfig().setReadBufferSize(2048);
         acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);  // seconds
         try {
+            LOG.info("Binding to port {}", port);
             acceptor.bind(new InetSocketAddress(port));
+            started.set(true);
         } catch (IOException e) {
             throw new UncheckedIOException("I/O error binding to port " + port, e);
         }
-
-        started.set(true);
     }
 
     public void stopNow() {
-        if (started.get()) {
+        if (started.compareAndSet(true, false)) {
+            LOG.info("Stopping...");
             acceptor.unbind();
         }
     }
