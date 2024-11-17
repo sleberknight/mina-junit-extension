@@ -1,5 +1,6 @@
 package com.acme.example.mina;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.awaitility.Awaitility.await;
 
@@ -72,5 +73,14 @@ class TimeServerTest {
         assertThatIllegalStateException()
                 .isThrownBy(() -> timeServer.createAndStart(42_000))
                 .withMessage("Already started");
+    }
+
+    @Test
+    void shouldIgnoreRepeatedStops() {
+        assertThatCode(() -> {
+            timeServer.stopNow();
+            timeServer.stopNow();
+            timeServer.stopNow();
+        }).doesNotThrowAnyException();
     }
 }
