@@ -23,7 +23,7 @@ import java.util.List;
 class TimeServerTest {
 
     @RegisterExtension
-    MinaSessionExtension sessionExtension = new MinaSessionExtension();
+    final MinaSessionExtension sessionExtension = new MinaSessionExtension();
 
     int port;
     TimeServer timeServer;

@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * JUnit Jupiter extension that allows integration testing using Apache MINA. It provides an {@link IoSession} for
- * sending data, for example you have a MINA-based server and want to test how it behaves when provided various
+ * sending data. For example, if you have a MINA-based server and want to test how it behaves when provided various
  * input data.
  * <p>
  * Tests using this extension should:

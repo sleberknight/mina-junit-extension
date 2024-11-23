@@ -1,12 +1,10 @@
 package com.acme.example.mina;
 
-import java.io.IOException;
-
 public class MinaTimeServerApp {
 
     private static final int PORT = 9123;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new TimeServer().createAndStart(PORT);
     }
 }
