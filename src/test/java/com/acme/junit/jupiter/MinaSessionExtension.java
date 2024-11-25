@@ -2,6 +2,8 @@ package com.acme.junit.jupiter;
 
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.nonNull;
+import static org.kiwiproject.base.KiwiPreconditions.requireNotNull;
+import static org.kiwiproject.base.KiwiStrings.f;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import lombok.Getter;
@@ -46,6 +48,7 @@ public class MinaSessionExtension implements
 
     private static final LocalPortChecker LOCAL_PORT_CHECKER = new LocalPortChecker();
     private static final int DEFAULT_CONNECTION_TIMEOUT_SECONDS = 2;
+    private static final int DEFAULT_START_PORT = 16_384;
 
     private NioSocketConnector senderConnector;
 
@@ -61,7 +64,7 @@ public class MinaSessionExtension implements
     @Getter
     private int port;
 
-    private final int secondsToWaitForConnection;
+    private final MinaSessionExtensionConfig config;
 
     /**
      * Create an instance using the default server connection timeout (two seconds).
@@ -77,7 +80,20 @@ public class MinaSessionExtension implements
      *                                   execution to start
      */
     public MinaSessionExtension(int secondsToWaitForConnection) {
-        this.secondsToWaitForConnection = secondsToWaitForConnection;
+        this(MinaSessionExtensionConfig.builder()
+                .secondsToWaitForConnection(DEFAULT_CONNECTION_TIMEOUT_SECONDS)
+                .portSearch(MinaServerPortSearch.RANDOM_ABOVE)
+                .startPort(DEFAULT_START_PORT)
+                .build());
+    }
+
+    /**
+     * Create an instance using the given configuration.
+     *
+     * @param config the configuration to use
+     */
+    public MinaSessionExtension(MinaSessionExtensionConfig config) {
+        this.config = requireNotNull(config, "config must not be null");
     }
 
     /**
@@ -85,8 +101,22 @@ public class MinaSessionExtension implements
      */
     @Override
     public void beforeEach(ExtensionContext context) {
-        port = LOCAL_PORT_CHECKER.findRandomOpenPortAbove(16_384).orElseThrow();
-        LOG.trace("Found open port {}", port);
+        var portSearch = config.portSearch();
+        var startPort = config.startPort();
+
+        var portOptional = switch (portSearch) {
+            case ABOVE -> LOCAL_PORT_CHECKER.findFirstOpenPortAbove(startPort);
+            case FROM -> LOCAL_PORT_CHECKER.findFirstOpenPortFrom(startPort);
+            case RANDOM_ABOVE -> LOCAL_PORT_CHECKER.findRandomOpenPortAbove(startPort);
+            case RANDOM_FROM -> LOCAL_PORT_CHECKER.findRandomOpenPortFrom(startPort);
+        };
+
+        this.port = portOptional.orElseThrow(() ->
+                new IllegalStateException(f("Unable to find port (PortSearch strategy: {}, start port: {})",
+                        portSearch, startPort)));
+
+        LOG.trace("Using PortSearch strategy {} with start port {}, found open port {}",
+                portSearch, startPort, port);
     }
 
     /**
@@ -111,6 +141,7 @@ public class MinaSessionExtension implements
         LOG.trace("Connecting to port {} on localhost", port);
         var socketAddress = new InetSocketAddress("localhost", port);
         var connectFuture = senderConnector.connect(socketAddress);
+        var secondsToWaitForConnection = config.secondsToWaitForConnection();
         var connectedBeforeTimeout = connectFuture.awaitUninterruptibly(secondsToWaitForConnection, TimeUnit.SECONDS);
         checkState(connectedBeforeTimeout,
                 "Did not connect before timeout (does your test start the server in a @BeforeEach method?)");
