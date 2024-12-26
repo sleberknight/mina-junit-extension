@@ -23,7 +23,7 @@
         <!-- dependency versions -->
         <kiwi-bom.version>2.0.18</kiwi-bom.version>
         <kiwi.version>4.5.2</kiwi.version>
-        <mina.version>2.2.3</mina.version>
+        <mina.version>2.2.4</mina.version>
     </properties>
 
     <dependencyManagement>
