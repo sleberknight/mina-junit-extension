@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.kiwiproject</groupId>
         <artifactId>kiwi-parent</artifactId>
-        <version>3.0.25</version>
+        <version>3.0.26</version>
     </parent>
 
     <groupId>com.acme</groupId>
@@ -21,8 +21,8 @@
 
     <properties>
         <!-- dependency versions -->
-        <kiwi-bom.version>2.0.25</kiwi-bom.version>
-        <kiwi.version>4.10.0</kiwi.version>
+        <kiwi-bom.version>2.0.26</kiwi-bom.version>
+        <kiwi.version>4.11.1</kiwi.version>
         <mina.version>2.2.4</mina.version>
     </properties>
 
