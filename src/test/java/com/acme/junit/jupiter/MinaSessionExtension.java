@@ -81,7 +81,7 @@ public class MinaSessionExtension implements
      */
     public MinaSessionExtension(int secondsToWaitForConnection) {
         this(MinaSessionExtensionConfig.builder()
-                .secondsToWaitForConnection(DEFAULT_CONNECTION_TIMEOUT_SECONDS)
+                .secondsToWaitForConnection(secondsToWaitForConnection)
                 .portSearch(MinaServerPortSearch.RANDOM_ABOVE)
                 .startPort(DEFAULT_START_PORT)
                 .build());
