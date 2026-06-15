@@ -21,8 +21,8 @@
 
     <properties>
         <!-- dependency versions -->
-        <kiwi-bom.version>3.2.0</kiwi-bom.version>
-        <kiwi.version>5.3.1</kiwi.version>
+        <kiwi-bom.version>3.3.0</kiwi-bom.version>
+        <kiwi.version>5.4.0</kiwi.version>
         <mina.version>2.2.8</mina.version>
     </properties>
 
